@@ -40,8 +40,6 @@ public class ContextProvider implements ContextCalculator<Subject> {
                             player(player),
                             hostile(player)
                     );
-            System.out.println(this.status.get(player.getUniqueId()).safeFromPlayer);
-            System.out.println(this.status.get(player.getUniqueId()).safeFromHostileMob);
         }
     }
 

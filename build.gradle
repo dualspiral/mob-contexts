@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'uk.co.dualspiral'
-version = '1.0.0'
+version = '1.0.1'
 
 dependencies {
     compileOnly 'org.spongepowered:spongeapi:7.4.0'
