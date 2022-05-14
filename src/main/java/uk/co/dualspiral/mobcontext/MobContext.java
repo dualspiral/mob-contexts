@@ -29,7 +29,8 @@ import java.util.concurrent.TimeUnit;
 @Plugin(
         id = "mob-context",
         name = "Mob Context",
-        version = "1.0.0-SNAPSHOT"
+        version = "1.0.0-SNAPSHOT",
+        description = "Permission contexts for hostile entities"
 )
 public class MobContext {
 

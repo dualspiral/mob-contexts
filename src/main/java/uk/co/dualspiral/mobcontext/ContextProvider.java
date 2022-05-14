@@ -40,6 +40,8 @@ public class ContextProvider implements ContextCalculator<Subject> {
                             player(player),
                             hostile(player)
                     );
+            System.out.println(this.status.get(player.getUniqueId()).safeFromPlayer);
+            System.out.println(this.status.get(player.getUniqueId()).safeFromHostileMob);
         }
     }
 
@@ -48,15 +50,17 @@ public class ContextProvider implements ContextCalculator<Subject> {
         if (player.getNearbyEntities(config.getHostileMobSafeDistance()).stream().anyMatch(mob -> mob instanceof Hostile)) {
             return NOT_SAFE_FROM_HOSTILE_MOB;
         } else {
-            return NOT_SAFE_FROM_PLAYER;
+            return IS_SAFE_FROM_HOSTILE_MOB;
         }
     }
 
     private Context player(final Player player) {
-        if (player.getNearbyEntities(config.getPlayerSafeRadius()).stream().anyMatch(mob -> mob instanceof Player)) {
-            return IS_SAFE_FROM_PLAYER;
+        if (player.getNearbyEntities(config.getPlayerSafeRadius()).stream()
+                .filter(x -> x != player)
+                .anyMatch(mob -> mob instanceof Player)) {
+            return NOT_SAFE_FROM_PLAYER;
         } else {
-            return IS_SAFE_FROM_HOSTILE_MOB;
+            return IS_SAFE_FROM_PLAYER;
         }
     }
 
