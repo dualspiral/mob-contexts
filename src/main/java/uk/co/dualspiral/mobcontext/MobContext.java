@@ -14,6 +14,7 @@ import org.spongepowered.api.entity.living.player.User;
 import org.spongepowered.api.event.filter.Getter;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
+import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.network.ClientConnectionEvent;
@@ -37,6 +38,8 @@ public class MobContext {
     private final ConfigurationLoader<CommentedConfigurationNode> configurationLoader;
     private final ContextProvider contextProvider = new ContextProvider();
 
+    private boolean isRegistered = false;
+
     @Inject
     public MobContext(final Logger logger,
                       final PluginContainer pluginContainer,
@@ -47,7 +50,7 @@ public class MobContext {
     }
 
     @Listener
-    public void onInit(final GameInitializationEvent event) {
+    public void onInit(final GamePreInitializationEvent event) {
         try {
             final ConfigurationNode node = this.configurationLoader.load();
             node.mergeValuesFrom(configurationLoader.createEmptyNode().setValue(TypeToken.of(Config.class), new Config()));
@@ -61,11 +64,16 @@ public class MobContext {
     public void onServiceProvision(final ChangeServiceProviderEvent event) {
         if (event.getService().equals(PermissionService.class)) {
             ((PermissionService) event.getNewProvider()).registerContextCalculator(contextProvider);
+            this.isRegistered = true;
         }
     }
 
     @Listener
     public void onServerStart(final GameStartedServerEvent event) {
+        if (!this.isRegistered) {
+            Sponge.getServiceManager().provideUnchecked(PermissionService.class).registerContextCalculator(contextProvider);
+            this.isRegistered = true;
+        }
         Sponge.getScheduler().createSyncExecutor(this.pluginContainer).scheduleAtFixedRate(contextProvider::updateContexts, 1, 1, TimeUnit.SECONDS);
     }
 
